@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Recipe App - Architecture Visual</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050810;
+            --surface: #0c1120;
+            --border: rgba(99, 179, 255, 0.2);
+            --text: #e2e8f0;
+            --muted: #8ea2bb;
+            --blue: #60a5fa;
+            --cyan: #22d3ee;
+            --green: #34d399;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(circle at top right, rgba(34, 211, 238, 0.12), transparent 35%), var(--bg);
+            color: var(--text);
+            font-family: "Inter", sans-serif;
+            padding: 28px 16px 40px;
+        }
+
+        .shell {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: clamp(1.8rem, 5vw, 2.6rem);
+        }
+
+        .sub {
+            margin: 10px 0 24px;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        .diagram {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            align-items: center;
+        }
+
+        .node {
+            border: 1px solid var(--border);
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 14px 12px;
+            text-align: center;
+            font-weight: 600;
+            min-height: 88px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .node small {
+            color: var(--muted);
+            font-weight: 500;
+            font-size: 0.74rem;
+        }
+
+        .arrow {
+            text-align: center;
+            color: var(--blue);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .legend {
+            margin-top: 20px;
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .legend-item {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 12px;
+            color: var(--muted);
+            font-size: 0.9rem;
+            line-height: 1.55;
+        }
+
+        .legend-item strong {
+            color: var(--text);
+        }
+
+        .actions {
+            margin-top: 24px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .actions a {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.82rem;
+            background: rgba(96, 165, 250, 0.15);
+        }
+
+        @media (max-width: 860px) {
+            .diagram {
+                grid-template-columns: 1fr;
+            }
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <h1>Architecture Visual</h1>
+        <p class="sub">Simple view of how user input moves through your cloud stack and returns a generated pet recipe.</p>
+
+        <section class="diagram" aria-label="Pet recipe architecture flow">
+            <div class="node">Browser Form<small>User enters pet details</small></div>
+            <div class="arrow">→</div>
+            <div class="node">API Gateway<small>POST /recipes</small></div>
+            <div class="arrow">→</div>
+            <div class="node">AWS Lambda<small>Creates prompt + handles response</small></div>
+            <div class="arrow">→</div>
+            <div class="node">Google Gemini API<small>Generates recipe text</small></div>
+            <div class="arrow">→</div>
+            <div class="node">Response to Browser<small>Recipe shown in UI</small></div>
+        </section>
+
+        <section class="legend">
+            <article class="legend-item"><strong>Security:</strong> API key is stored in AWS Secrets Manager, not hardcoded in frontend files.</article>
+            <article class="legend-item"><strong>Hosting:</strong> Frontend can be served from S3 + CloudFront while API stays behind API Gateway.</article>
+            <article class="legend-item"><strong>Scalability:</strong> Lambda scales automatically based on traffic volume.</article>
+        </section>
+
+        <div class="actions">
+            <a href="./story.html" target="_blank" rel="noopener noreferrer">Read Build Story</a>
+            <a href="./index.html">Back to App</a>
+        </div>
+    </main>
+</body>
+</html>
