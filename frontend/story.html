@@ -108,26 +108,39 @@
         <p class="eyebrow">Build Story</p>
         <h1>How the Pet Recipe App Works</h1>
         <p class="lead">
-            This app helps pet owners generate recipe ideas quickly. You enter pet details,
-            the app sends a request to your cloud API, and the backend returns a generated recipe.
+            This app helps pet owners generate recipe ideas quickly while still using a production-ready
+            AWS architecture. It combines static hosting, secure authentication, serverless APIs,
+            and cloud persistence for saved recipes and pet profiles.
         </p>
 
         <section class="grid">
             <article class="card">
                 <h2>Challenge</h2>
-                <p>Give non-technical users a simple way to generate pet-friendly recipe ideas without dealing with cloud setup details.</p>
+                <p>Create a user-friendly experience for recipe generation while supporting secure sign-in and saved data across sessions.</p>
             </article>
             <article class="card">
-                <h2>Frontend</h2>
-                <p>A simple form collects pet type, ingredients, and allergies, then sends one request to the API endpoint.</p>
+                <h2>Hosting Layer</h2>
+                <p>The frontend is deployed to S3 and served through CloudFront at app.joesparkman.com/pet-recipe-app for global delivery and cache control.</p>
             </article>
             <article class="card">
-                <h2>Backend</h2>
-                <p>API Gateway routes the request to Lambda. Lambda creates the prompt, calls Gemini, and returns the recipe response.</p>
+                <h2>Auth Layer</h2>
+                <p>Amazon Cognito handles Hosted UI sign-in with PKCE. The browser stores tokens in session state and sends Bearer JWTs for protected routes.</p>
             </article>
             <article class="card">
-                <h2>Security</h2>
-                <p>The Gemini key is stored in AWS Secrets Manager and read at runtime. It is not hardcoded in frontend or backend files.</p>
+                <h2>API and Compute</h2>
+                <p>API Gateway routes requests to Lambda: POST /recipes for generation and protected GET/POST routes for saved-recipes and pet-profiles.</p>
+            </article>
+            <article class="card">
+                <h2>Data Layer</h2>
+                <p>DynamoDB persists user-scoped data in two tables: SavedRecipes and PetProfiles, keyed by identity claims from Cognito tokens.</p>
+            </article>
+            <article class="card">
+                <h2>AI Integration</h2>
+                <p>Lambda builds recipe prompts and calls Gemini generateContent, then returns the generated recipe text back to the browser UI.</p>
+            </article>
+            <article class="card">
+                <h2>Security Model</h2>
+                <p>Frontend never contains sensitive server credentials. Secret values stay in backend configuration and IAM access is scoped to required services.</p>
             </article>
         </section>
 
