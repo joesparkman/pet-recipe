@@ -11,12 +11,15 @@
         :root {
             --bg: #050810;
             --surface: #0c1120;
+            --surface-2: #111827;
             --border: rgba(99, 179, 255, 0.2);
+            --border-soft: rgba(99, 179, 255, 0.09);
             --text: #e2e8f0;
             --muted: #8ea2bb;
             --blue: #60a5fa;
             --cyan: #22d3ee;
             --green: #34d399;
+            --purple: #a855f7;
         }
 
         * { box-sizing: border-box; }
@@ -24,14 +27,17 @@
         body {
             margin: 0;
             min-height: 100vh;
-            background: radial-gradient(circle at top right, rgba(34, 211, 238, 0.12), transparent 35%), var(--bg);
+            background:
+                radial-gradient(circle at 18% 2%, rgba(96, 165, 250, 0.14), transparent 35%),
+                radial-gradient(circle at 92% 16%, rgba(168, 85, 247, 0.12), transparent 30%),
+                var(--bg);
             color: var(--text);
             font-family: "Inter", sans-serif;
             padding: 28px 16px 40px;
         }
 
         .shell {
-            max-width: 980px;
+            max-width: 1140px;
             margin: 0 auto;
         }
 
@@ -45,28 +51,58 @@
             margin: 10px 0 24px;
             color: var(--muted);
             line-height: 1.65;
+            max-width: 760px;
         }
 
-        .diagram {
+        .board {
+            border: 1px solid var(--border-soft);
+            border-radius: 18px;
+            background: linear-gradient(145deg, rgba(12, 17, 32, 0.95), rgba(17, 24, 39, 0.94));
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+            padding: 18px;
+            overflow: hidden;
+        }
+
+        .lane {
+            border: 1px solid var(--border-soft);
+            border-radius: 14px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.015);
+        }
+
+        .lane + .lane {
+            margin-top: 12px;
+        }
+
+        .lane-title {
+            margin: 0 0 10px;
+            font-size: 0.74rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--blue);
+            font-weight: 700;
+        }
+
+        .lane-grid {
             display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
             gap: 10px;
-            grid-template-columns: repeat(7, minmax(0, 1fr));
-            align-items: center;
-            margin-bottom: 14px;
+            align-items: stretch;
         }
 
         .node {
             border: 1px solid var(--border);
-            background: var(--surface);
+            background: linear-gradient(135deg, var(--surface), var(--surface-2));
             border-radius: 12px;
             padding: 14px 12px;
             text-align: center;
             font-weight: 600;
-            min-height: 88px;
+            min-height: 94px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             gap: 6px;
+            position: relative;
         }
 
         .node small {
@@ -75,18 +111,26 @@
             font-size: 0.74rem;
         }
 
-        .arrow {
-            text-align: center;
+        .node.blue { border-color: rgba(96, 165, 250, 0.38); }
+        .node.cyan { border-color: rgba(34, 211, 238, 0.38); }
+        .node.green { border-color: rgba(52, 211, 153, 0.38); }
+        .node.purple { border-color: rgba(168, 85, 247, 0.35); }
+
+        .flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: var(--blue);
-            font-size: 1.2rem;
             font-weight: 700;
+            opacity: 0.9;
+            font-size: 1.1rem;
         }
 
-        .flow-note {
-            margin: 6px 0 18px;
+        .board-note {
+            margin: 12px 4px 2px;
             color: var(--muted);
-            font-size: 0.9rem;
-            line-height: 1.6;
+            font-size: 0.86rem;
+            line-height: 1.55;
         }
 
         .legend {
@@ -129,11 +173,13 @@
         }
 
         @media (max-width: 860px) {
-            .diagram {
+            .lane-grid {
                 grid-template-columns: 1fr;
             }
-            .arrow {
+
+            .flow {
                 transform: rotate(90deg);
+                min-height: 22px;
             }
         }
     </style>
@@ -141,30 +187,43 @@
 <body>
     <main class="shell">
         <h1>Architecture Visual</h1>
-        <p class="sub">Complete cloud view of hosting, authentication, API processing, and persistence for the Pet Recipe App.</p>
+        <p class="sub">Complete production architecture for Pet Recipe App, from static frontend delivery through authentication, protected API routes, serverless compute, AI generation, and persistent storage.</p>
 
-        <section class="diagram" aria-label="Pet recipe architecture flow">
-            <div class="node">User Browser<small>Loads app and signs in</small></div>
-            <div class="arrow">→</div>
-            <div class="node">CloudFront<small>Global CDN for app.joesparkman.com</small></div>
-            <div class="arrow">→</div>
-            <div class="node">S3 Static Files<small>Serves index, app.js, styles</small></div>
-            <div class="arrow">→</div>
-            <div class="node">App Runtime<small>Calls Cognito + API Gateway</small></div>
-        </section>
+        <section class="board" aria-label="Pet recipe cloud architecture lanes">
+            <article class="lane">
+                <p class="lane-title">Delivery and Frontend</p>
+                <div class="lane-grid">
+                    <div class="node blue">User Browser<small>Loads app and enters pet details</small></div>
+                    <div class="flow">→</div>
+                    <div class="node blue">CloudFront CDN<small>app.joesparkman.com edge delivery</small></div>
+                    <div class="flow">→</div>
+                    <div class="node blue">S3 Static Hosting<small>index.html, app.js, styles.css</small></div>
+                </div>
+            </article>
 
-        <p class="flow-note">After frontend loads from CloudFront/S3, runtime flow continues through auth and APIs:</p>
+            <article class="lane">
+                <p class="lane-title">Auth and API Routing</p>
+                <div class="lane-grid">
+                    <div class="node purple">Amazon Cognito<small>Hosted UI + PKCE + JWT tokens</small></div>
+                    <div class="flow">→</div>
+                    <div class="node cyan">API Gateway HTTP API<small>/recipes, /saved-recipes, /pet-profiles</small></div>
+                    <div class="flow">→</div>
+                    <div class="node cyan">Lambda (Python)<small>route dispatch and token-claim user mapping</small></div>
+                </div>
+            </article>
 
-        <section class="diagram" aria-label="Auth and API flow">
-            <div class="node">Amazon Cognito<small>Hosted UI + PKCE + JWT</small></div>
-            <div class="arrow">→</div>
-            <div class="node">API Gateway HTTP API<small>/recipes, /saved-recipes, /pet-profiles</small></div>
-            <div class="arrow">→</div>
-            <div class="node">AWS Lambda (Python)<small>Route logic + Gemini request</small></div>
-            <div class="arrow">→</div>
-            <div class="node">Gemini API<small>Returns generated recipe text</small></div>
-            <div class="arrow">→</div>
-            <div class="node">DynamoDB<small>SavedRecipes + PetProfiles</small></div>
+            <article class="lane">
+                <p class="lane-title">Generation and Persistence</p>
+                <div class="lane-grid">
+                    <div class="node green">Gemini API<small>generateContent for recipe output</small></div>
+                    <div class="flow">↔</div>
+                    <div class="node green">Lambda Runtime<small>prompt builder + response formatting</small></div>
+                    <div class="flow">→</div>
+                    <div class="node green">DynamoDB Tables<small>SavedRecipes and PetProfiles</small></div>
+                </div>
+            </article>
+
+            <p class="board-note">Protected endpoints require Cognito bearer tokens. Recipe generation and saved data are user-scoped through JWT claim mapping in Lambda.</p>
         </section>
 
         <section class="legend">
