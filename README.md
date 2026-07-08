@@ -26,6 +26,10 @@ AI-powered pet-safe recipe generator built with a static frontend and AWS server
 - AI: Google Gemini API
 - Hosting: S3 + CloudFront
 
+## Architecture Diagram
+
+![Pet Recipe App Architecture](docs/architecture-diagram.svg)
+
 ## Project Structure
 
 - app.py: Lambda backend handler and route logic

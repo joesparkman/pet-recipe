@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Pet Recipe App Architecture</title>
+  <desc id="desc">Frontend on S3 and CloudFront calling API Gateway and Lambda with Cognito auth, DynamoDB storage, and Gemini API integration.</desc>
+
+  <defs>
+    <style>
+      .bg { fill: #050810; }
+      .panel { fill: #0c1120; stroke: #1f2a44; stroke-width: 2; rx: 12; }
+      .panel2 { fill: #111827; stroke: #30426d; stroke-width: 2; rx: 12; }
+      .txt { fill: #e2e8f0; font-family: Inter, Arial, sans-serif; font-size: 18px; }
+      .sub { fill: #94a3b8; font-family: Inter, Arial, sans-serif; font-size: 14px; }
+      .title { fill: #60a5fa; font-family: Inter, Arial, sans-serif; font-size: 28px; font-weight: 700; }
+      .line { stroke: #60a5fa; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .line2 { stroke: #22d3ee; stroke-width: 3; fill: none; marker-end: url(#arrow2); }
+      .line3 { stroke: #34d399; stroke-width: 3; fill: none; marker-end: url(#arrow3); }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#60a5fa"/>
+    </marker>
+    <marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow3" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="760"/>
+  <text class="title" x="40" y="52">Pet Recipe App - Cloud Architecture</text>
+
+  <rect class="panel" x="50" y="120" width="250" height="120"/>
+  <text class="txt" x="80" y="165">User Browser</text>
+  <text class="sub" x="80" y="193">Pet recipe UI + PKCE auth</text>
+
+  <rect class="panel" x="380" y="90" width="300" height="90"/>
+  <text class="txt" x="410" y="128">CloudFront</text>
+  <text class="sub" x="410" y="154">app.joesparkman.com</text>
+
+  <rect class="panel" x="380" y="210" width="300" height="90"/>
+  <text class="txt" x="410" y="248">S3 Static Hosting</text>
+  <text class="sub" x="410" y="274">/pet-recipe-app/*</text>
+
+  <rect class="panel2" x="760" y="90" width="360" height="90"/>
+  <text class="txt" x="790" y="128">Amazon Cognito</text>
+  <text class="sub" x="790" y="154">Hosted UI + JWT access tokens</text>
+
+  <rect class="panel2" x="760" y="230" width="360" height="110"/>
+  <text class="txt" x="790" y="270">API Gateway HTTP API</text>
+  <text class="sub" x="790" y="296">POST /recipes</text>
+  <text class="sub" x="790" y="318">GET/POST /saved-recipes, /pet-profiles</text>
+
+  <rect class="panel2" x="760" y="390" width="360" height="110"/>
+  <text class="txt" x="790" y="430">AWS Lambda (Python)</text>
+  <text class="sub" x="790" y="456">Recipe generation + protected routes</text>
+  <text class="sub" x="790" y="478">JWT claims -> user_id</text>
+
+  <rect class="panel2" x="760" y="550" width="170" height="120"/>
+  <text class="txt" x="785" y="590">DynamoDB</text>
+  <text class="sub" x="785" y="614">SavedRecipes</text>
+  <text class="sub" x="785" y="636">PetProfiles</text>
+
+  <rect class="panel2" x="950" y="550" width="170" height="120"/>
+  <text class="txt" x="978" y="590">Gemini API</text>
+  <text class="sub" x="978" y="614">generateContent</text>
+  <text class="sub" x="978" y="636">pet-safe recipes</text>
+
+  <path class="line" d="M300 180 L380 135"/>
+  <path class="line" d="M530 180 L530 210"/>
+  <path class="line2" d="M300 200 L760 270"/>
+  <path class="line2" d="M680 135 L760 135"/>
+  <path class="line2" d="M940 180 L940 230"/>
+  <path class="line" d="M940 340 L940 390"/>
+  <path class="line3" d="M860 500 L845 550"/>
+  <path class="line3" d="M1020 500 L1035 550"/>
+
+  <text class="sub" x="70" y="720">Auth: Cognito PKCE in frontend. Protected routes require bearer token.</text>
+  <text class="sub" x="70" y="742">Deploy: S3 sync + CloudFront invalidation scripts in repository root.</text>
+</svg>
