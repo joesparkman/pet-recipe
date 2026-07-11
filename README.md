@@ -1,122 +1,130 @@
-# Pet Recipe App
+# pet-recipe
 
-AI-powered pet-safe recipe generator built with a static frontend and AWS serverless backend.
+This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
 
-## Live App
+- hello_world - Code for the application's Lambda function.
+- events - Invocation events that you can use to invoke the function.
+- tests - Unit tests for the application code. 
+- template.yaml - A template that defines the application's AWS resources.
 
-- App: https://app.joesparkman.com/pet-recipe-app/index.html
-- Story: https://app.joesparkman.com/pet-recipe-app/story.html
-- Architecture: https://app.joesparkman.com/pet-recipe-app/architecture-diagram.html
+The application uses several AWS resources, including Lambda functions and an API Gateway API. These resources are defined in the `template.yaml` file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
 
-## What It Does
+If you prefer to use an integrated development environment (IDE) to build and test your application, you can use the AWS Toolkit.  
+The AWS Toolkit is an open source plug-in for popular IDEs that uses the SAM CLI to build and deploy serverless applications on AWS. The AWS Toolkit also adds a simplified step-through debugging experience for Lambda function code. See the following links to get started.
 
-- Generates pet-friendly recipes using Gemini
-- Supports Cognito sign-in (PKCE flow)
-- Saves and lists recipes for signed-in users
-- Saves and lists pet profiles for signed-in users
-- Deploys frontend on S3 + CloudFront
+* [CLion](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [GoLand](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [IntelliJ](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [WebStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [Rider](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [PhpStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [PyCharm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [RubyMine](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [DataGrip](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [VS Code](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/welcome.html)
+* [Visual Studio](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html)
 
-## Stack
+## Deploy the sample application
 
-- Frontend: HTML, CSS, JavaScript
-- Backend: Python on AWS Lambda
-- API: API Gateway HTTP API
-- Auth: Amazon Cognito (Hosted UI + PKCE)
-- Data: DynamoDB
-- AI: Google Gemini API
-- Hosting: S3 + CloudFront
+The Serverless Application Model Command Line Interface (SAM CLI) is an extension of the AWS CLI that adds functionality for building and testing Lambda applications. It uses Docker to run your functions in an Amazon Linux environment that matches Lambda. It can also emulate your application's build environment and API.
 
-## Architecture Diagram
+To use the SAM CLI, you need the following tools.
 
-![Pet Recipe App Architecture](docs/architecture-diagram.svg)
+* SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
+* [Python 3 installed](https://www.python.org/downloads/)
+* Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
 
-## Project Structure
+To build and deploy your application for the first time, run the following in your shell:
 
-- app.py: Lambda backend handler and route logic
-- list_models.py: helper script for model listing experiments
-- frontend/index.html: main UI
-- frontend/styles.css: styling
-- frontend/app.js: auth and API calls
-- frontend/story.html: build story page
-- frontend/architecture-diagram.html: architecture visual page
-- create-s3-bucket.ps1: S3 bucket automation script
-- deploy-frontend.ps1: static frontend deploy script
-- DEPLOY_S3_CLOUDFRONT.md: deployment notes
+```bash
+sam build --use-container
+sam deploy --guided
+```
 
-## Backend Routes
+The first command will build the source of your application. The second command will package and deploy your application to AWS, with a series of prompts:
 
-- POST /recipes
-  - Generates a recipe from pet_type, ingredients, allergies
-- POST /saved-recipes (protected)
-  - Saves a generated recipe for the signed-in user
-- GET /saved-recipes (protected)
-  - Lists saved recipes for the signed-in user
-- POST /pet-profiles (protected)
-  - Saves pet profile data for the signed-in user
-- GET /pet-profiles (protected)
-  - Lists pet profiles for the signed-in user
+* **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
+* **AWS Region**: The AWS region you want to deploy your app to.
+* **Confirm changes before deploy**: If set to yes, any change sets will be shown to you before execution for manual review. If set to no, the AWS SAM CLI will automatically deploy application changes.
+* **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modifies IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
+* **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
 
-## Required AWS Resources
+You can find your API Gateway Endpoint URL in the output values displayed after deployment.
 
-- Lambda function running app.lambda_handler
-- API Gateway HTTP API with the routes above
-- Cognito User Pool + App Client (Authorization Code + PKCE)
-- DynamoDB table for recipes
-  - Table name: SavedRecipes
-  - Partition key: user_id (String)
-  - Sort key: recipe_id (String)
-- DynamoDB table for pets
-  - Table name: PetProfiles
-  - Partition key: user_id (String)
-  - Sort key: pet_id (String)
-- S3 bucket for static hosting (behind CloudFront)
-- CloudFront distribution serving app.joesparkman.com
+## Use the SAM CLI to build and test locally
 
-## Lambda Environment Variables
+Build your application with the `sam build --use-container` command.
 
-- GEMINI_API_KEY=your_gemini_api_key
-- SAVED_RECIPES_TABLE=SavedRecipes
-- PET_PROFILES_TABLE=PetProfiles
+```bash
+pet-recipe$ sam build --use-container
+```
 
-Note: If you use Secrets Manager for Gemini key retrieval, configure your Lambda code and IAM permissions accordingly.
+The SAM CLI installs dependencies defined in `hello_world/requirements.txt`, creates a deployment package, and saves it in the `.aws-sam/build` folder.
 
-## Local Development
+Test a single function by invoking it directly with a test event. An event is a JSON document that represents the input that the function receives from the event source. Test events are included in the `events` folder in this project.
 
-1. Serve frontend files (for example with VS Code Live Server).
-2. Open:
-   - http://127.0.0.1:5500/frontend/index.html
-3. Ensure API endpoint in frontend/app.js points to your deployed API.
+Run functions locally and invoke them with the `sam local invoke` command.
 
-## Deploy Frontend
+```bash
+pet-recipe$ sam local invoke HelloWorldFunction --event events/event.json
+```
 
-Deploy to S3 prefix and invalidate CloudFront:
+The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000.
 
-PowerShell command:
-.\deploy-frontend.ps1 -BucketName app.joesparkman.com -CloudFrontDistributionId E3HHU0R4DHMA69 -Prefix pet-recipe-app
+```bash
+pet-recipe$ sam local start-api
+pet-recipe$ curl http://localhost:3000/
+```
 
-## Create S3 Bucket From Terminal
+The SAM CLI reads the application template to determine the API's routes and the functions that they invoke. The `Events` property on each function's definition includes the route and method for each path.
 
-PowerShell command:
-.\create-s3-bucket.ps1 -BucketName your-bucket-name -Region us-east-1
+```yaml
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: get
+```
 
-Optional with versioning:
-.\create-s3-bucket.ps1 -BucketName your-bucket-name -Region us-east-1 -EnableVersioning
+## Add a resource to your application
+The application template uses AWS Serverless Application Model (AWS SAM) to define application resources. AWS SAM is an extension of AWS CloudFormation with a simpler syntax for configuring common serverless application resources such as functions, triggers, and APIs. For resources not included in [the SAM specification](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md), you can use standard [AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) resource types.
 
-## Cognito Callback URLs
+## Fetch, tail, and filter Lambda function logs
 
-For production path hosting, include:
+To simplify troubleshooting, SAM CLI has a command called `sam logs`. `sam logs` lets you fetch logs generated by your deployed Lambda function from the command line. In addition to printing the logs on the terminal, this command has several nifty features to help you quickly find the bug.
 
-- https://app.joesparkman.com/pet-recipe-app/index.html
+`NOTE`: This command works for all AWS Lambda functions; not just the ones you deploy using SAM.
 
-Keep localhost callback too if you test locally.
+```bash
+pet-recipe$ sam logs -n HelloWorldFunction --stack-name "pet-recipe" --tail
+```
 
-## Security Notes
+You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
 
-- Do not hardcode API keys in frontend code
-- Use Cognito tokens for protected API routes
-- Use least-privilege IAM for Lambda
-- Keep S3 bucket private and serve through CloudFront
+## Tests
 
-## Repository
+Tests are defined in the `tests` folder in this project. Use PIP to install the test dependencies and run tests.
 
-- https://github.com/joesparkman/pet-recipe
+```bash
+pet-recipe$ pip install -r tests/requirements.txt --user
+# unit test
+pet-recipe$ python -m pytest tests/unit -v
+# integration test, requiring deploying the stack first.
+# Create the env variable AWS_SAM_STACK_NAME with the name of the stack we are testing
+pet-recipe$ AWS_SAM_STACK_NAME="pet-recipe" python -m pytest tests/integration -v
+```
+
+## Cleanup
+
+To delete the sample application that you created, use the AWS CLI. Assuming you used your project name for the stack name, you can run the following:
+
+```bash
+sam delete --stack-name "pet-recipe"
+```
+
+## Resources
+
+See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
+
+Next, you can use AWS Serverless Application Repository to deploy ready to use Apps that go beyond hello world samples and learn how authors developed their applications: [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)
