@@ -357,7 +357,7 @@ body::before {
 }
 
 .raw-response {
-    margin: 16px 0 0;
+    margin: 10px 0 0;
     padding: 18px;
     border-radius: 14px;
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -365,6 +365,22 @@ body::before {
     color: #c7d8ec;
     overflow-x: auto;
     font-size: 0.9rem;
+}
+
+.raw-response-wrap {
+    margin-top: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.015);
+    padding: 8px 10px 10px;
+}
+
+.raw-response-wrap summary {
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #9fb0c6;
 }
 
 .saved-actions {
@@ -436,21 +452,40 @@ body::before {
 }
 
 @media (max-width: 920px) {
+    body {
+        padding-top: max(env(safe-area-inset-top), 12px);
+    }
+
     .workspace {
         grid-template-columns: 1fr;
     }
 
     .hero h1 {
         max-width: none;
+        font-size: clamp(2.2rem, 10vw, 3.5rem);
+        line-height: 1.02;
     }
 
     .page-shell {
-        padding-top: 24px;
+        width: min(1180px, calc(100% - 16px));
+        padding-top: 14px;
+    }
+
+    .hero {
+        padding: 18px 0 24px;
+    }
+
+    .hero-copy {
+        margin-top: 12px;
+        font-size: 0.95rem;
+        line-height: 1.55;
     }
 
     .auth-bar {
         flex-direction: column;
         align-items: stretch;
+        margin-top: 14px;
+        padding: 10px;
     }
 
     .auth-actions {
@@ -489,8 +524,4 @@ body::before {
     50% {
         transform: translateY(-40px) scale(1.05);
     }
-}
-
-.story-panel {
-    margin-top: 22px;
 }

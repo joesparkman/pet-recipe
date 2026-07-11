@@ -8,11 +8,12 @@ import boto3
 from boto3.dynamodb.conditions import Key
 
 
-MODEL_NAME = "gemini-2.5-flash"
+MODEL_NAME = "gemini-2.5-flash-lite"
 GEMINI_API_URL = (
     "https://generativelanguage.googleapis.com/v1beta/"
     f"models/{MODEL_NAME}:generateContent"
 )
+GEMINI_SECRET_NAME = os.environ.get("GEMINI_SECRET_NAME", "")
 SAVED_RECIPES_TABLE = os.environ.get("SAVED_RECIPES_TABLE", "SavedRecipes")
 PET_PROFILES_TABLE = os.environ.get("PET_PROFILES_TABLE", "PetProfiles")
 
@@ -21,8 +22,37 @@ dynamodb = boto3.resource("dynamodb")
 
 def get_api_key():
     api_key = os.environ.get("GEMINI_API_KEY")
+    if api_key:
+        return api_key
+
+    if not GEMINI_SECRET_NAME:
+        raise RuntimeError("Set GEMINI_API_KEY or GEMINI_SECRET_NAME before running this script.")
+
+    try:
+        secret_client = boto3.client("secretsmanager")
+        secret_value = secret_client.get_secret_value(SecretId=GEMINI_SECRET_NAME)
+    except Exception as exc:
+        raise RuntimeError(f"Could not load Gemini key from Secrets Manager: {exc}") from exc
+
+    secret_string = secret_value.get("SecretString", "")
+    if not secret_string:
+        raise RuntimeError("Secrets Manager secret is empty.")
+
+    try:
+        parsed_secret = json.loads(secret_string)
+        if isinstance(parsed_secret, dict):
+            api_key = (
+                parsed_secret.get("GEMINI_API_KEY")
+                or parsed_secret.get("api_key")
+                or parsed_secret.get("key")
+            )
+        else:
+            api_key = ""
+    except json.JSONDecodeError:
+        api_key = secret_string.strip()
+
     if not api_key:
-        raise RuntimeError("Set GEMINI_API_KEY before running this script.")
+        raise RuntimeError("Gemini API key not found in Secrets Manager secret.")
 
     return api_key
 
@@ -66,7 +96,12 @@ def generate_recipe(ingredients, pet_type, allergies):
         raise RuntimeError(f"Gemini API network error: {exc.reason}") from exc
 
     try:
-        return response_body["candidates"][0]["content"]["parts"][0]["text"]
+        parts = response_body["candidates"][0]["content"]["parts"]
+        texts = [part.get("text", "") for part in parts if isinstance(part, dict)]
+        full_text = "\n".join([text.strip() for text in texts if text and text.strip()]).strip()
+        if not full_text:
+            raise KeyError("No text content in Gemini response parts")
+        return full_text
     except (KeyError, IndexError, TypeError) as exc:
         raise RuntimeError(f"Unexpected Gemini response format: {response_body}") from exc
 

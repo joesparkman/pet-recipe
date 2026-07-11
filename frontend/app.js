@@ -426,6 +426,35 @@ function setStatus(state, text) {
     statusPill.textContent = text;
 }
 
+function extractRecipeText(parsedResponse) {
+    if (!parsedResponse) {
+        return "";
+    }
+
+    if (typeof parsedResponse.recipe === "string") {
+        const candidate = parsedResponse.recipe.trim();
+
+        if (candidate.startsWith("{") && candidate.endsWith("}")) {
+            try {
+                const nested = JSON.parse(candidate);
+                if (typeof nested.recipe === "string") {
+                    return nested.recipe.trim();
+                }
+            } catch {
+                return candidate;
+            }
+        }
+
+        return candidate;
+    }
+
+    if (parsedResponse.recipe && typeof parsedResponse.recipe === "object") {
+        return JSON.stringify(parsedResponse.recipe, null, 2);
+    }
+
+    return "";
+}
+
 signInBtn.addEventListener("click", async () => {
     try {
         await startSignIn();
@@ -540,11 +569,11 @@ form.addEventListener("submit", async (event) => {
         });
 
         const responseText = await response.text();
-        rawResponse.textContent = responseText;
 
         let parsed;
         try {
             parsed = JSON.parse(responseText);
+            rawResponse.textContent = JSON.stringify(parsed, null, 2);
         } catch {
             throw new Error("Something went wrong reading the response. Please try again.");
         }
@@ -558,9 +587,9 @@ form.addEventListener("submit", async (event) => {
             pet_type: payload.pet_type,
             ingredients: payload.ingredients,
             allergies: payload.allergies,
-            recipe: parsed.recipe || "",
+            recipe: extractRecipeText(parsed),
         };
-        recipeOutput.textContent = parsed.recipe || "No recipe was returned. Please try again.";
+        recipeOutput.textContent = lastGeneratedRecipe.recipe || "No recipe was returned. Please try again.";
         setStatus("success", "Recipe is ready");
     } catch (error) {
         recipeOutput.textContent = error.message || "Something went wrong. Please try again.";
